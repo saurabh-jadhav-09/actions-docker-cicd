@@ -7,32 +7,31 @@ phases:
     commands:
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  #pre_build:
+    #commands:
+      #- echo log in to Amazon ECR...
+      #- aws --version
+      #- echo $AWS_DEFAULT_REGION
+      #- $(aws ecr get-login --no-include-email --region ap-south-1)
+      #- REPOSITORY_URI=${{ REPO }}
+      #- COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      #- IMAGE_TAG=${COMMIT_HASH:=latest}
+
+############ rohan code
   pre_build:
     commands:
-      - echo log in to Amazon ECR...
-      - sudo apt update
-      # install aws cli
-      #- curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      #- sudo apt install unzip
-      #- unzip awscliv2.zip
-      #- sudo ./aws/install --update flag
+      - echo Logging in to Amazon ECR...
       - aws --version
-      - echo $AWS_DEFAULT_REGION
-
-      #- sudo rm -rf /usr/local/aws
-      #- sudo rm /usr/local/bin/aws
-      #- sudo apt-get remove awscli
-      #- sudo apt-get purge awscli
-
-      # below cmd is for awscli V1
-      - $(aws ecr get-login --no-include-email --region ap-south-1)
-
-       # below cmd is for awscli V2 current
-      #- aws ecr get-login-password
-      #- $(aws ecr get-login-password --region ap-south-1) 
-      - REPOSITORY_URI=${{ REPO }}
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 390402551854.dkr.ecr.ap-south-1.amazonaws.com
+      - REPOSITORY_URI=https://github.com/saurabh-jadhav-09/aws-ecs-docker
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
+      #- CONTAINER_NAME="booking-service"
+      #- AWS_TASK_DEFINATION_NAME="booking-service"
+      #- REGION="ca-central-1"
+      #- CONTAINER_PORT="3010"
+
+
   build:
     commands:
       - echo Build started on `date`
