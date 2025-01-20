@@ -14,7 +14,7 @@ phases:
       - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - sudo apt install unzip
       - unzip awscliv2.zip
-      - sudo ./aws/install
+      - sudo ./aws/install --update flag
       - aws --version
       - echo $AWS_DEFAULT_REGION
       - $(aws ecr get-login --no-include-email --region ap=south-1)
