@@ -23,7 +23,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws --version
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 390402551854.dkr.ecr.ap-south-1.amazonaws.com
-      - REPOSITORY_URI=https://github.com/saurabh-jadhav-09/aws-ecs-docker
+      - REPOSITORY_URI=390402551854.dkr.ecr.ap-south-1.amazonaws.com/aws-ecs-docker
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       #- CONTAINER_NAME="booking-service"
