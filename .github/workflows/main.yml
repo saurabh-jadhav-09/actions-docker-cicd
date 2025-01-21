@@ -11,7 +11,7 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -33,27 +33,27 @@ jobs:
 
 #######
 
-     - name: Login to Amazon ECR
-       id: login-ecr
-       uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-     - name: Get commit hash
-       id: get-commit-hash
-       run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+    - name: Get commit hash
+      id: get-commit-hash
+      run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
 
-     - name: Get timestamp
-       id: get-timestamp
-       run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+    - name: Get timestamp
+      id: get-timestamp
+      run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
 
-     - name: Build, tag, and push the image to Amazon ECR
-       id: build-image
-       env:
-         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-         IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
-       run: |
-         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG        
+    - name: Build, tag, and push the image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}-${{ steps.get-timestamp.outputs.timestamp }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
 
 
@@ -83,20 +83,20 @@ jobs:
      #   IMAGE_TAG=${COMMIT_HASH:-latest}
       #  docker build -t $REPOSITORY_URI:latest .
        # docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-      
-     
 
 
 
 
-      
-      
+
+
+
+
         ##
     #- name: Push Docker image to ECR
       #run: |
         #docker push $REPOSITORY_URI:latest
         #docker push $REPOSITORY_URI:$IMAGE_TAG
-  
+
 
 
 
@@ -120,4 +120,3 @@ jobs:
         TASK_DEFINITION=my-task-definition
         IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
         aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ap-south-1 --task-definition $TASK_DEFINITION --desired-count 2
-
