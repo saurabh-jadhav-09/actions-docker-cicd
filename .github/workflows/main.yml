@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for Dockerized Node.js App
+name: CI/CD Pipeline for Dockerized Node.js App   
 
 on:
   push:
