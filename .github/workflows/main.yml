@@ -124,8 +124,8 @@ jobs:
 
     - name: Deploy to AWS ECS
       run: |
-        CLUSTER_NAME=my-cluster
-        SERVICE_NAME=my-service
+        CLUSTER_NAME=actions-docker
+        SERVICE_NAME=actions-docker
         TASK_DEFINITION=actions-docker
         IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
         aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ap-south-1 --task-definition $TASK_DEFINITION --desired-count 2
