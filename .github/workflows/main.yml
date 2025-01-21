@@ -33,7 +33,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        REPOSITORY_URI=390402551854.dkr.ecr.ap-south-1.amazonaws.com/aws-ecs-docker
+        REPOSITORY_URI=390402551854.dkr.ecr.ap-south-1.amazonaws.com/actions-docker
         COMMIT_HASH=$(echo $GITHUB_SHA | cut -c 1-7)
         IMAGE_TAG=${COMMIT_HASH:-latest}
         docker build -t $REPOSITORY_URI:latest .
