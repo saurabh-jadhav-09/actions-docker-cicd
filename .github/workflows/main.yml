@@ -1,0 +1,60 @@
+name: CI/CD Pipeline for Dockerized Node.js App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Amazon ECR
+      run: |
+        aws --version
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 390402551854.dkr.ecr.ap-south-1.amazonaws.com
+
+    - name: Build Docker image
+      run: |
+        REPOSITORY_URI=390402551854.dkr.ecr.ap-south-1.amazonaws.com/aws-ecs-docker
+        COMMIT_HASH=$(echo $GITHUB_SHA | cut -c 1-7)
+        IMAGE_TAG=${COMMIT_HASH:-latest}
+        docker build -t $REPOSITORY_URI:latest .
+        docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+    - name: Push Docker image to ECR
+      run: |
+        docker push $REPOSITORY_URI:latest
+        docker push $REPOSITORY_URI:$IMAGE_TAG
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: |
+        npm install
+
+    - name: Run tests
+      run: |
+        npm test
+
+    - name: Deploy to AWS ECS
+      run: |
+        CLUSTER_NAME=my-cluster
+        SERVICE_NAME=my-service
+        TASK_DEFINITION=my-task-definition
+        IMAGE_URI=$REPOSITORY_URI:$IMAGE_TAG
+        aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ap-south-1 --task-definition $TASK_DEFINITION --desired-count 2
+
